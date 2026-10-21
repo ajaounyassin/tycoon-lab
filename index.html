@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tycoon Lab : quel jeu veux-tu voir sortir ?</title>
+<meta name="description" content="3 jeux mobiles en préparation. Vote pour celui que tu veux voir sortir et sois prévenu en premier.">
+<meta property="og:title" content="Quel jeu veux-tu voir sortir ?">
+<meta property="og:description" content="3 jeux mobiles idle en préparation. Vote et sois prévenu à la sortie.">
+<meta name="theme-color" content="#14142b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14142b; --bg2: #1e1e3f; --card: #25254d; --ink: #ffffff; --muted: #b9b9d9;
+    --yel: #ffd166; --grn: #06d6a0; --red: #ff5c5c; --blue: #4cc9f0; --line: rgba(255,255,255,.12);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: Poppins, system-ui, sans-serif; }
+  body { min-height: 100vh; background: radial-gradient(1200px 600px at 50% -10%, #3a2a7a 0%, var(--bg) 60%); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 16px 56px; }
+  header { text-align: center; margin-bottom: 26px; }
+  .badge { display: inline-block; font-weight: 700; font-size: 13px; letter-spacing: .04em; color: #1b1b33; background: var(--yel);
+           padding: 6px 12px; border-radius: 999px; text-transform: uppercase; }
+  h1 { font-family: "Lilita One", Poppins, sans-serif; font-weight: 400; font-size: clamp(34px, 7vw, 56px); line-height: 1.05;
+       margin: 14px 0 10px; text-shadow: 0 4px 0 rgba(0,0,0,.35); }
+  h1 span { color: var(--yel); }
+  .lead { color: var(--muted); font-size: 16px; max-width: 560px; margin: 0 auto; line-height: 1.5; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column;
+          box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  .media { position: relative; aspect-ratio: 3 / 4; background: #000; overflow: hidden; }
+  .media svg { width: 100%; height: 100%; display: block; }
+  .tag { position: absolute; top: 12px; left: 12px; font-weight: 800; font-size: 12px; padding: 5px 10px; border-radius: 999px;
+         background: rgba(20,20,43,.8); border: 1px solid var(--line); }
+  .body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .body h2 { font-family: "Lilita One", Poppins, sans-serif; font-weight: 400; font-size: 26px; margin: 0; letter-spacing: .01em; }
+  .body p { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+  .btn { appearance: none; border: 0; cursor: pointer; font: inherit; font-weight: 800; font-size: 17px; color: #10301f;
+         background: var(--grn); padding: 14px 16px; border-radius: 16px; box-shadow: 0 5px 0 #048a68; transition: transform .08s, box-shadow .08s;
+         margin-top: auto; width: 100%; }
+  .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #048a68; }
+  .btn:focus-visible, input:focus-visible { outline: 3px solid var(--yel); outline-offset: 2px; }
+  .card[data-c="livraison"] .btn { background: var(--blue); color: #0b2733; box-shadow: 0 5px 0 #2a8fb0; }
+  .card[data-c="ia"] .btn { background: #b388ff; color: #22113d; box-shadow: 0 5px 0 #7d55c7; }
+  form { display: none; flex-direction: column; gap: 10px; margin-top: auto; }
+  .card.open form { display: flex; }
+  .card.open .btn.cta { display: none; }
+  input[type=email] { font: inherit; font-size: 16px; padding: 13px 14px; border-radius: 14px; border: 1px solid var(--line);
+                      background: #17173a; color: var(--ink); width: 100%; }
+  .consent { display: flex; gap: 9px; align-items: flex-start; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+  .consent input { margin-top: 2px; width: 18px; height: 18px; flex: none; accent-color: var(--grn); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .msg { font-size: 14px; font-weight: 700; min-height: 1em; }
+  .msg.err { color: var(--red); }
+  .done { display: none; text-align: center; padding: 8px 0 2px; margin-top: auto; }
+  .card.ok .done { display: block; } .card.ok form, .card.ok .btn.cta { display: none; }
+  .done b { display: block; font-family: "Lilita One", Poppins, sans-serif; font-weight: 400; font-size: 24px; color: var(--yel); }
+  .done span { color: var(--muted); font-size: 14px; }
+  footer { margin-top: 34px; color: var(--muted); font-size: 12.5px; line-height: 1.6; text-align: center; max-width: 720px; margin-left: auto; margin-right: auto; }
+  footer a { color: var(--ink); }
+  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">3 jeux en préparation</span>
+    <h1>Quel jeu veux-tu<br><span>voir sortir ?</span></h1>
+    <p class="lead">On développe un seul de ces trois jeux mobiles. Choisis ton préféré et laisse ton email : on te prévient dès qu'il sort.</p>
+  </header>
+
+  <main class="grid" id="grid">
+    <article class="card" data-c="nettoyage">
+      <div class="media"><span class="tag">Jeu 1</span>
+        <svg viewBox="0 0 270 360" role="img" aria-label="Aperçu : un canapé crasseux nettoyé par un robot">
+<defs><clipPath id="cA"><rect x="0" y="0" width="270" height="360"><animate attributeName="x" values="0;0;250;250" keyTimes="0;.15;.75;1" dur="4s" repeatCount="indefinite"/></rect></clipPath></defs>
+<rect width="270" height="360" fill="#f3e3cc"/><rect y="250" width="270" height="110" fill="#c98f5a"/>
+<g stroke="#b67c49" stroke-width="2">
+<line x1="0" y1="285" x2="270" y2="285"/><line x1="0" y1="322" x2="270" y2="322"/></g>
+<rect x="150" y="70" width="70" height="50" rx="4" fill="#3d3a4b"/><rect x="156" y="76" width="58" height="38" fill="#ff8c61"/>
+<g><rect x="35" y="185" width="200" height="60" rx="18" fill="#3a86ff"/><rect x="45" y="150" width="180" height="55" rx="18" fill="#4895ff"/>
+<rect x="22" y="175" width="34" height="75" rx="14" fill="#2f6fd6"/><rect x="214" y="175" width="34" height="75" rx="14" fill="#2f6fd6"/>
+<rect x="60" y="195" width="70" height="28" rx="10" fill="#5aa2ff"/><rect x="140" y="195" width="70" height="28" rx="10" fill="#5aa2ff"/>
+<rect x="45" y="245" width="8" height="12" fill="#5a3d2b"/><rect x="217" y="245" width="8" height="12" fill="#5a3d2b"/></g>
+<g clip-path="url(#cA)" fill="#6e5a3c" opacity=".92"><rect x="22" y="150" width="226" height="100" rx="18"/>
+<g fill="#3b2e1d"><ellipse cx="70" cy="180" rx="22" ry="12"/><ellipse cx="150" cy="205" rx="28" ry="10"/><ellipse cx="205" cy="170" rx="16" ry="9"/><ellipse cx="110" cy="232" rx="18" ry="7"/></g>
+<ellipse cx="60" cy="300" rx="22" ry="7" fill="#3f2f1c"/><ellipse cx="200" cy="318" rx="16" ry="5" fill="#3f2f1c"/></g>
+<g><animateTransform attributeName="transform" type="translate" values="0 0;0 0;200 0;200 0" keyTimes="0;.15;.75;1" dur="4s" repeatCount="indefinite"/>
+<line x1="18" y1="215" x2="50" y2="118" stroke="#adb5bd" stroke-width="5" stroke-linecap="round"/><rect x="4" y="210" width="30" height="12" rx="3" fill="#2b2d42"/>
+<circle cx="14" cy="200" r="7" fill="#fff"/><circle cx="26" cy="193" r="5" fill="#fff"/></g>
+<g transform="translate(205 262)"><rect x="-18" y="0" width="36" height="34" rx="9" fill="#ffd166"/><circle cx="0" cy="-8" r="16" fill="#ffd166"/>
+<rect x="-12" y="-12" width="24" height="7" rx="3" fill="#4cc9f0"/><line x1="0" y1="-24" x2="0" y2="-34" stroke="#2b2d42" stroke-width="3"/><circle cx="0" cy="-36" r="4" fill="#4cc9f0"/>
+<rect x="-16" y="32" width="32" height="8" rx="4" fill="#2b2d42"/></g>
+<g fill="#fff"><path d="M228 140 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z"><animate attributeName="opacity" values="0;0;1;0" keyTimes="0;.6;.8;1" dur="4s" repeatCount="indefinite"/></path></g>
+</svg></div>
+      <div class="body">
+        <h2>Empire du Nettoyage</h2>
+        <p>Achète l'appart le plus sale de la ville, nettoie-le, embauche des robots et rachète l'immeuble.</p>
+        <button class="btn cta" type="button">Je veux ce jeu</button>
+        <form novalidate></form>
+        <div class="done"><b>C'est noté !</b><span>Tu seras prévenu à la sortie.</span></div>
+      </div>
+    </article>
+    <article class="card" data-c="livraison">
+      <div class="media"><span class="tag">Jeu 2</span>
+        <svg viewBox="0 0 270 360" role="img" aria-label="Aperçu : des colis sur un tapis roulant">
+<defs><g id="bx"><rect x="-17" y="-28" width="34" height="28" rx="3" fill="#c8a165"/><rect x="-17" y="-18" width="34" height="5" fill="#e9c46a"/><rect x="-3" y="-28" width="6" height="28" fill="#e9c46a"/></g>
+<clipPath id="cB"><rect x="20" y="0" width="230" height="360"/></clipPath></defs>
+<rect width="270" height="360" fill="#e9ecef"/><rect y="250" width="270" height="110" fill="#b8bec6"/><rect y="292" width="270" height="4" fill="#ffbe0b"/>
+<g fill="#868e96"><rect x="160" y="80" width="90" height="140" fill="#adb5bd"/>
+<rect x="160" y="96" width="90" height="4"/><rect x="160" y="112" width="90" height="4"/><rect x="160" y="128" width="90" height="4"/><rect x="160" y="144" width="90" height="4"/><rect x="160" y="160" width="90" height="4"/><rect x="160" y="176" width="90" height="4"/><rect x="160" y="192" width="90" height="4"/></g>
+<rect x="15" y="200" width="240" height="14" rx="4" fill="#212529"/><rect x="15" y="196" width="240" height="5" fill="#ffbe0b"/>
+<g fill="#495057"><rect x="30" y="214" width="6" height="40"/><rect x="130" y="214" width="6" height="40"/><rect x="234" y="214" width="6" height="40"/></g>
+<g clip-path="url(#cB)"><g><animateTransform attributeName="transform" type="translate" values="0 0;60 0" dur="1.2s" repeatCount="indefinite"/>
+<use href="#bx" x="-10" y="196"/><use href="#bx" x="50" y="196"/><use href="#bx" x="110" y="196"/><use href="#bx" x="170" y="196"/><use href="#bx" x="230" y="196"/></g></g>
+<rect x="30" y="300" width="80" height="10" rx="2" fill="#bc8a5f"/>
+<g><use href="#bx" x="52" y="300"/><use href="#bx" x="88" y="300"/><use href="#bx" x="70" y="272"/>
+<use href="#bx" x="52" y="244"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;.5;.55;1" dur="2.4s" repeatCount="indefinite"/></use></g>
+<g transform="translate(150 296)"><rect x="-18" y="0" width="36" height="34" rx="9" fill="#06d6a0"/><circle cx="0" cy="-8" r="16" fill="#06d6a0"/>
+<rect x="-12" y="-12" width="24" height="7" rx="3" fill="#4cc9f0"/><line x1="0" y1="-24" x2="0" y2="-34" stroke="#2b2d42" stroke-width="3"/><circle cx="0" cy="-36" r="4" fill="#4cc9f0"/>
+<rect x="-16" y="32" width="32" height="8" rx="4" fill="#2b2d42"/>
+<animateTransform attributeName="transform" type="translate" values="150 296;150 292;150 296" dur=".6s" repeatCount="indefinite"/></g>
+<g transform="translate(205 120)"><rect x="-26" y="-26" width="52" height="40" rx="5" fill="#ffc300"/><rect x="-5" y="-26" width="10" height="40" fill="#e63946"/><rect x="-26" y="-10" width="52" height="8" fill="#e63946"/>
+<animateTransform attributeName="transform" type="rotate" values="0 205 120;-6 205 120;6 205 120;0 205 120" dur=".5s" repeatCount="indefinite" additive="sum"/></g>
+<text x="205" y="80" text-anchor="middle" font-family="Lilita One, sans-serif" font-size="26" fill="#2b2d42">?</text>
+</svg></div>
+      <div class="body">
+        <h2>Empire de la Livraison</h2>
+        <p>Lance ta boutique en ligne, expédie tes premières commandes et construis l'entrepôt géant.</p>
+        <button class="btn cta" type="button">Je veux ce jeu</button>
+        <form novalidate></form>
+        <div class="done"><b>C'est noté !</b><span>Tu seras prévenu à la sortie.</span></div>
+      </div>
+    </article>
+    <article class="card" data-c="ia">
+      <div class="media"><span class="tag">Jeu 3</span>
+        <svg viewBox="0 0 270 360" role="img" aria-label="Aperçu : des serveurs qui clignotent">
+<rect width="270" height="360" fill="#e9ecef"/><rect y="250" width="270" height="110" fill="#ced4da"/>
+<g stroke="#adb5bd"><line x1="0" y1="280" x2="270" y2="280"/><line x1="0" y1="315" x2="270" y2="315"/><line x1="70" y1="250" x2="40" y2="360"/><line x1="200" y1="250" x2="230" y2="360"/></g>
+<circle cx="135" cy="60" r="12" fill="#ff2d2d"><animate attributeName="opacity" values=".3;1;.3" dur="1s" repeatCount="indefinite"/></circle>
+<g id="rk"><rect x="20" y="95" width="70" height="160" rx="5" fill="#1f2430"/>
+<g fill="#343a46"><rect x="27" y="105" width="56" height="14" rx="2"/><rect x="27" y="125" width="56" height="14" rx="2"/><rect x="27" y="145" width="56" height="14" rx="2"/><rect x="27" y="165" width="56" height="14" rx="2"/><rect x="27" y="185" width="56" height="14" rx="2"/><rect x="27" y="205" width="56" height="14" rx="2"/><rect x="27" y="225" width="56" height="14" rx="2"/></g>
+<g fill="#4cc9f0"><rect x="32" y="110" width="22" height="4"><animate attributeName="opacity" values="1;.2;1" dur=".9s" repeatCount="indefinite"/></rect>
+<rect x="32" y="130" width="22" height="4"><animate attributeName="opacity" values=".2;1;.2" dur="1.1s" repeatCount="indefinite"/></rect>
+<rect x="32" y="150" width="22" height="4"><animate attributeName="opacity" values="1;.3;1" dur=".7s" repeatCount="indefinite"/></rect>
+<rect x="32" y="170" width="22" height="4"><animate attributeName="opacity" values=".4;1;.4" dur="1.3s" repeatCount="indefinite"/></rect>
+<rect x="32" y="190" width="22" height="4"><animate attributeName="opacity" values="1;.2;1" dur="1s" repeatCount="indefinite"/></rect>
+<rect x="32" y="210" width="22" height="4"><animate attributeName="opacity" values=".3;1;.3" dur=".8s" repeatCount="indefinite"/></rect>
+<rect x="32" y="230" width="22" height="4"><animate attributeName="opacity" values="1;.4;1" dur="1.2s" repeatCount="indefinite"/></rect>
+<rect x="72" y="110" width="5" height="4"/><rect x="72" y="150" width="5" height="4"/><rect x="72" y="190" width="5" height="4"/><rect x="72" y="230" width="5" height="4"/></g></g>
+<use href="#rk" x="80"/><use href="#rk" x="160"/>
+<g fill="#4cc9f0"><rect x="45" y="90" width="12" height="12" rx="2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -70" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="1.6s" repeatCount="indefinite"/></rect>
+<rect x="128" y="90" width="12" height="12" rx="2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -70" dur="1.6s" begin=".5s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="1.6s" begin=".5s" repeatCount="indefinite"/></rect>
+<rect x="210" y="90" width="12" height="12" rx="2"><animateTransform attributeName="transform" type="translate" values="0 0;0 -70" dur="1.6s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="1.6s" begin="1s" repeatCount="indefinite"/></rect></g>
+<rect x="15" y="262" width="240" height="4" fill="#4cc9f0" opacity=".8"/>
+<g transform="translate(70 300)"><rect x="-34" y="-30" width="68" height="44" rx="6" fill="#e9f5ff" stroke="#3a86ff" stroke-width="3"/>
+<g stroke="#3a86ff" stroke-width="3" fill="none"><circle cx="-14" cy="-8" r="10"/><circle cx="14" cy="-8" r="10"/></g>
+<g fill="#adb5bd"><g><rect x="-22" y="-9" width="16" height="2"/><rect x="-15" y="-16" width="2" height="16"/><animateTransform attributeName="transform" type="rotate" values="0 -14 -8;360 -14 -8" dur=".6s" repeatCount="indefinite"/></g>
+<g><rect x="6" y="-9" width="16" height="2"/><rect x="13" y="-16" width="2" height="16"/><animateTransform attributeName="transform" type="rotate" values="0 14 -8;360 14 -8" dur=".6s" repeatCount="indefinite"/></g></g></g>
+<g transform="translate(185 300)"><rect x="-18" y="0" width="36" height="34" rx="9" fill="#ffd166"/><circle cx="0" cy="-8" r="16" fill="#ffd166"/>
+<rect x="-12" y="-12" width="24" height="7" rx="3" fill="#4cc9f0"/><line x1="0" y1="-24" x2="0" y2="-34" stroke="#2b2d42" stroke-width="3"/><circle cx="0" cy="-36" r="4" fill="#4cc9f0"/>
+<rect x="-16" y="32" width="32" height="8" rx="4" fill="#2b2d42"/></g>
+</svg></div>
+      <div class="body">
+        <h2>Empire de l'IA</h2>
+        <p>Lance une IA dans ton garage, évite la surchauffe et bâtis le plus grand data center du monde.</p>
+        <button class="btn cta" type="button">Je veux ce jeu</button>
+        <form novalidate></form>
+        <div class="done"><b>C'est noté !</b><span>Tu seras prévenu à la sortie.</span></div>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    Jeux en cours de développement : les images sont des aperçus et peuvent évoluer.<br>
+    Ton email sert uniquement à te prévenir de la sortie du jeu choisi. Il n'est ni vendu ni partagé, et il est supprimé
+    si le jeu n'est pas développé. Pour le faire effacer à tout moment : <a href="mailto:ajaounyassin@gmail.com">ajaounyassin@gmail.com</a>.<br>
+    © Tycoon Lab
+  </footer>
+</div>
+
+<script>
+(function () {
+  var URL_ = "https://nzxztijlcgabtkqmlptm.supabase.co/rest/v1/rpc/";
+  var KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im56eHp0aWpsY2dhYnRrcW1scHRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwNzc1ODYsImV4cCI6MjEwMjY1MzU4Nn0.EQdsCVGLgybhnseGCU2xuHP3oep-VsAuc1R-FEQRRgM";
+  var params = new URLSearchParams(location.search);
+  var src = (params.get("src") || params.get("utm_source") || (document.referrer ? new URL(document.referrer).hostname : "direct")).slice(0, 64);
+
+  function rpc(fn, body) {
+    return fetch(URL_ + fn, {
+      method: "POST",
+      headers: { "apikey": KEY, "Authorization": "Bearer " + KEY, "Content-Type": "application/json" },
+      body: JSON.stringify(body), keepalive: true
+    });
+  }
+
+  // Ordre des cartes aléatoire pour ne pas favoriser la première
+  var grid = document.getElementById("grid");
+  var cards = Array.prototype.slice.call(grid.children);
+  for (var i = cards.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = cards[i]; cards[i] = cards[j]; cards[j] = t; }
+  cards.forEach(function (c, k) { grid.appendChild(c); c.querySelector(".tag").textContent = "Jeu " + (k + 1); });
+
+  rpc("idle_track", { p_event: "view", p_concept: null, p_source: src }).catch(function () {});
+
+  cards.forEach(function (card) {
+    var concept = card.getAttribute("data-c");
+    var form = card.querySelector("form");
+    var id = "e-" + concept;
+    form.innerHTML =
+      '<label class="hp" aria-hidden="true">Ne pas remplir<input type="text" name="website" tabindex="-1" autocomplete="off"></label>' +
+      '<input type="email" id="' + id + '" name="email" placeholder="ton@email.com" autocomplete="email" inputmode="email" required aria-label="Ton email">' +
+      '<label class="consent"><input type="checkbox" name="consent" required>' +
+      "<span>J'accepte de recevoir un email quand ce jeu sort. Désinscription possible à tout moment.</span></label>" +
+      '<button class="btn" type="submit">Préviens-moi</button><div class="msg" role="status" aria-live="polite"></div>';
+
+    card.querySelector(".btn.cta").addEventListener("click", function () {
+      card.classList.add("open");
+      rpc("idle_track", { p_event: "open", p_concept: concept, p_source: src }).catch(function () {});
+      setTimeout(function () { var e = document.getElementById(id); if (e) e.focus(); }, 50);
+    });
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var msg = form.querySelector(".msg"); msg.className = "msg"; msg.textContent = "";
+      if (form.website.value) { card.classList.add("ok"); return; }   // robot de spam
+      var email = form.email.value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.className = "msg err"; msg.textContent = "Cet email n'a pas l'air valide."; return; }
+      if (!form.consent.checked) { msg.className = "msg err"; msg.textContent = "Coche la case pour être prévenu."; return; }
+      var b = form.querySelector("button[type=submit]"); b.disabled = true; b.textContent = "Envoi...";
+      rpc("idle_signup", { p_email: email, p_concept: concept, p_consent: true, p_source: src })
+        .then(function (r) {
+          if (!r.ok) throw new Error(r.status);
+          card.classList.add("ok");
+          try { localStorage.setItem("voted_" + concept, "1"); } catch (e) {}
+        })
+        .catch(function () {
+          msg.className = "msg err"; msg.textContent = "Oups, ça n'a pas marché. Réessaie dans un instant.";
+          b.disabled = false; b.textContent = "Préviens-moi";
+        });
+    });
+
+    try { if (localStorage.getItem("voted_" + concept)) card.classList.add("ok"); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
